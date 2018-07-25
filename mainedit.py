@@ -1,6 +1,6 @@
 import Tkinter as Tk
 from PIL import Image, ImageTk
-from os import listdir
+from os import listdir, getcwd
 import time
 import datetime
 from threading import Timer
@@ -107,11 +107,12 @@ class HRISubtask(Tk.Frame):
             print (i, type, x)
             if type == self.currType:
                 correctAnswers.append(int(i/2))
-            imgfiles = listdir("/home/rrl/Downloads/images/"+type)
+            here = getcwd()
+            imgfiles = listdir(here+"/images/"+type)
             chosenfile = imgfiles[int(x)]
 
             print ("choosing "+chosenfile)
-            chosenFiles.append("/home/rrl/Downloads/images/"+type+"/"+chosenfile)
+            chosenFiles.append(here+"/images/"+type+"/"+chosenfile)
         print (correctAnswers)
         return chosenFiles,correctAnswers
 
