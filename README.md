@@ -8,9 +8,7 @@ This program is designed to be run on an Aldebaran NAO robot.
 This program has been tested on Ubuntu 14.04 using Python 2.7. Please install the following dependencies. Not all commands will need to be run with sudo if run as root, but to avoid possible permission errors, code below run with sudo.
 
 ```
- sudo apt-get install python-tk python-pip
- sudo pip install --upgrade pip
- sudo pip install Pillow
+ sudo apt-get install python-tk python-pip python-imaging-tk
 ```
 
 ### Installing
