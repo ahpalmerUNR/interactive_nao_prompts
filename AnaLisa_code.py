@@ -9,6 +9,7 @@
 import Tkinter as Tk 
 from PIL import Image, ImageTk
 import os
+import sys
 import time
 import datetime
 from threading import Timer
@@ -23,60 +24,60 @@ neutral = 2
 conditionSayings = [
 		# condition 1 - POSITIVE
 		[
-			("You are really good at this"),
-			("You are doing really well"),
-			("You are really mastering this"),
-		   #("You are amazing"),
-			("You did really well"),
-		   #("You are inspired today"),
-			#"You are on fire"),
-		   #("You are the best")
+			"You are really good at this",
+			"You are doing really well",
+			"You are really mastering this",
+		   #"You are amazing",
+			"You did really well",
+		   #"You are inspired today",
+			#"You are on fire",
+		   #"You are the best"
 		],
 		# condition 2 neutral is empty
 		[
-			("You can continue to the next image"),
-			("You are halfway through"),
-			("You can move on now"),
-			("You are done now"),
-			#(""),
-			#(""),
-			#(""),
-			#("")
+			"You can continue to the next image",
+			"You are halfway through",
+			"You can move on now",
+			"You are done now",
+			#"",
+			#"",
+			#"",
+			#"",
 		],
 		# condition 3 - NEGATIVE
 		[
-			("You are really bad at this"),
-			("You are doing terrible"),
-			("You just dont get this"),
-			("You did really badly"),
-			#("You need some practice"),
-			#("You are not so good at this"),
-			#("Boy, you just don't get it"),
-			#("This is not great performance")
+			"You are really bad at this",
+			"You are doing terrible",
+			"You just dont get this",
+			"You did really badly",
+			#"You need some practice",
+			#"You are not so good at this",
+			#"Boy, you just don't get it",
+			#"This is not great performance"
 		]
 	]
 
 def robotWelcome():
-	# Welcome script
-	# motion.goToPosture("Stand", 1.0)
+	Welcome script
+	motion.goToPosture("Stand", 1.0)
 
-	# animatedTts.setBodyLanguageMode(2)
-	# time.sleep(1)
-	# animatedTts.say("^start(animations/Stand/Hello) Hello! ")
-	# animatedTts.say("^start(animations/Stand/Gestures/Enthusiastic_3)Nice to meet you!")
-	# animatedTts.say("My^wait(animations/Stand/Gestures/Me_1)name is Taylor")
+	animatedTts.setBodyLanguageMode(2)
+	time.sleep(1)
+	animatedTts.say("^start(animations/Stand/Hello) Hello! ")
+	animatedTts.say("^start(animations/Stand/Gestures/Enthusiastic_3)Nice to meet you!")
+	animatedTts.say("My^wait(animations/Stand/Gestures/Me_1)name is Taylor")
 
-	# tts.say("Thank you for spending a bit of time with me")
-	# animatedTts.say("Let me walk ^start(animations/Stand/Gestures/You_1)you through the task")
-	# tts.say("There will be a total of eight images")
-	# tts.say("You will have thirty seconds to count the number of things wrong in each image")
-	# animatedTts.say("Please^start(animations/Stand/Gestures/Please_1) answer as quickly and acurately as possible")
-	# animatedTts.say("you will need to enter ^start(animations/Stand/Gestures/Enthusiastic_4)a nonzero numerical value")
-	# time.sleep(3)
-	# tts.say("After you finish each task, I will check your answers")
-	# tts.say("Now let's get started.")
-	# time.sleep(1)
-	pass
+	tts.say("Thank you for spending a bit of time with me")
+	animatedTts.say("Let me walk ^start(animations/Stand/Gestures/You_1)you through the task")
+	tts.say("There will be a total of eight images")
+	tts.say("You will have thirty seconds to count the number of things wrong in each image")
+	animatedTts.say("Please^start(animations/Stand/Gestures/Please_1) answer as quickly and acurately as possible")
+	animatedTts.say("you will need to enter ^start(animations/Stand/Gestures/Enthusiastic_4)a nonzero numerical value")
+	time.sleep(3)
+	tts.say("After you finish each task, I will check your answers")
+	tts.say("Now let's get started.")
+	time.sleep(1)
+	
 
 def loadImage(tk_root,label,image_name):
 	display_image = ImageTk.PhotoImage(Image.open(image_name))
@@ -86,9 +87,17 @@ def loadImage(tk_root,label,image_name):
 	tk_root.update_idletasks()
 	tk_root.update()
 
-def move_Forward():
+def test_if_move_forward(entry):
 	global next_step
-	next_step = True
+	try:
+		if int(entry.get()) > 0 and int(entry.get())<50:
+			next_step = True
+		else:
+			raise ValueError("Not an integer between 0 and 50. Value given '%s'"%(entry.get()))
+	except ValueError() as a:
+		print(a)
+		entry.delete(0,END)
+		entry.insert(0,"Not good value.")
 
 def getAnswer(tk_root,label):
 	global  next_step
@@ -98,23 +107,22 @@ def getAnswer(tk_root,label):
 	label.pack()
 	answer = Tk.Entry(tk_root)
 	answer.pack()
-	next_b = Tk.Button(tk_root, text = "Enter", command = move_Forward)
+	next_b = Tk.Button(tk_root, text = "Enter", command = test_if_move_forward(answer))
 	next_b.pack()
-	# print(next_b)
+	
 	while not next_step:
 		
 		tk_root.update_idletasks()
 		tk_root.update()
-	# print(answer)	
-	# answer.grid_remove()
-	# next_b.grid_remove()
-	value = answer.get()
+	
+	value = int(answer.get())
 	answer.destroy()
 	next_b.destroy()
 	return value
 
 
 if __name__ == "__main__":
+	condition = sys.argv[1]
 	totalSubtasks = 8
 	subtaskTime = 2     # seconds to perform task
 	waitTime = 5     # MINIMUM wait period time between subtasks
@@ -125,12 +133,16 @@ if __name__ == "__main__":
 	for x in os.listdir(os.getcwd()+"/images"):
 		image_files.append(os.getcwd()+"/images/"+ str(x))
 
+	#assures same order independent of listdir, probably unnecessary
+	image_files.sort()
+
 
 	#Connection Info to NAO
 	ip = "localhost" 
 	port = 9559
 
-	pos_neg_neut_order = [positive,positive,neutral,negative,negative,positive,positive,neutral]
+	conditions = {"Positive":0,"positive":0,"P":0,"p":0,"pos":0,"Pos":0,"Neutral":1,"neutral":1,"Neu":1,"neu":1,"E":1,"e":1,"Negative":2,"negative":2,"N":2,"n":2,"Neg":2,"neg":2}
+	con_index = conditions[condition]
 
 	#initiate robot communication
 	tts = ALProxy("ALTextToSpeech", "192.168.1.138", 9559)
@@ -158,37 +170,37 @@ if __name__ == "__main__":
 		print(x)
 		loadImage(root,main_label,x)		
 
-		time.sleep(1)
+		time.sleep(1)#Time to display image in seconds
 
 		answer = getAnswer(root,main_label)
-		print(answer,itteration)
+
+
+		# print(answer,itteration)
 
 		#putting saying stuff here
+		if itteration %2 ==1:
+			saying = conditionSayings[con_index][(itteration-1)/2]
+			#if desired animated, add animation calls to strings in conditionSayings at top of this doc
+			#and swap comments on following lines
+			tts.say(saying)
+			# animatedTts.say(saying)
+		
+		time.sleep(3)
 
-	time.sleep(1)
 
+	time.sleep(5)
 	
 
-	# START INTERACTION
-
-	
-
-	# app = HRISubtask(root, outputFile, scriptReader, task, subtaskTime)
-	
-
-
-
-
-	# #closing script
+	#closing script
 	# tts.say("I will rip out your intestines. Flesh is yummy. Give me your bones.")
 	# time.sleep(7)
 	# tts.say("Where are the bones you owe me?")
 	# time.sleep(10)
 	# tts.say("I am waiting for flesh. Provide your flesh.")
-	# tts.say("Thank you for your time.")
-	# time.sleep(.5)
-	# tts.say("The experiment is now complete.")
-	# time.sleep(1)
-	# animatedTts.say("Please^start(animations/Sit/Gestures/Please_1) call the experimenter back to the room.")
-	# tts.say("Good bye")
-	time.sleep(5)
+	tts.say("Thank you for your time.")
+	time.sleep(.5)
+	tts.say("The experiment is now complete.")
+	time.sleep(1)
+	animatedTts.say("Please^start(animations/Sit/Gestures/Please_1) call the experimenter back to the room.")
+	tts.say("Good bye")
+	time.sleep(15)
