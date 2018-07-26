@@ -52,7 +52,7 @@ conditionSayings = [
 	]
 
 def robotWelcome():
-	Welcome script
+	# Welcome script
 	motion.goToPosture("Stand", 1.0)
 
 	animatedTts.setBodyLanguageMode(2)

@@ -23,7 +23,7 @@ sudo mkdir -p /opt/nao/
 sudo tar -xvzf pynaoqi-python2.7-2.1.4.13-linux64.tar.gz -C /opt/nao/
 ```
 
-open the AnaLisa_code.py file and edit the lines
+open the interact.py file and edit the lines
 ```
 #Connection Info to NAO
 ip = "localhost" 
