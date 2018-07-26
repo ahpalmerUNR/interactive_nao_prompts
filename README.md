@@ -9,7 +9,7 @@ This program has been tested on Ubuntu 14.04 using Python 2.7. Please install th
 
 ```
  sudo apt-get install python-tk python-pip
- sudo pip install --update pip
+ sudo pip install --upgrade pip
  sudo pip install Pillow
 ```
 
