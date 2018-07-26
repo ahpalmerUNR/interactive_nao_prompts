@@ -4,7 +4,7 @@
 # @Author: ahpalmerUNR
 # @Date:   2018-07-25 13:43:18
 # @Last Modified by:   ahpalmerUNR
-# @Last Modified time: 2018-07-25 16:49:01
+# @Last Modified time: 2018-07-26 16:07:27
 
 import Tkinter as Tk 
 from PIL import Image, ImageTk
@@ -81,10 +81,13 @@ def loadImage(tk_root,label,image_name):
 	tk_root.update_idletasks()
 	tk_root.update()
 
-def test_if_move_forward(entry):
+def test_if_move_forward(entry,label):
 	global next_step
+	print(entry.get())
 	try:
-		if int(entry.get()) > 0 and int(entry.get())<50:
+		if entry.get() == '':
+			pass
+		elif int(entry.get()) > 0 and int(entry.get())<50:
 			next_step = True
 		else:
 			raise ValueError("Not an integer between 0 and 50. Value given '%s'"%(entry.get()))
@@ -92,16 +95,18 @@ def test_if_move_forward(entry):
 		print(a)
 		entry.delete(0,END)
 		entry.insert(0,"Not good value.")
+		label.configure(text = "How many mistakes were in the image?\nPlease enter an integer greater than 0,\nand less than 50.")
+		label.text = "How many mistakes were in the image?\nPlease enter an integer greater than 0,\nand less than 50."
 
 def getAnswer(tk_root,label):
 	global  next_step
 	next_step = False
-	value = 0
+	value = 1
 	label.configure(text = "How many mistakes were in the image?", image = "")
 	label.pack()
-	answer = Tk.Entry(tk_root)
+	answer = Tk.Entry(tk_root, textvariable = '1')
 	answer.pack()
-	next_b = Tk.Button(tk_root, text = "Enter", command = test_if_move_forward(answer))
+	next_b = Tk.Button(tk_root, text = "Enter", command = lambda:test_if_move_forward(answer,label))
 	next_b.pack()
 	
 	while not next_step:
@@ -121,8 +126,9 @@ if __name__ == "__main__":
 	except:
 		condition = "Positive"
 	
-	imageTime = 30     # seconds 
+	imageTime = 10     # seconds 
 	waitTime = 5     # seconds
+	ipaddress = "192.168.0.109"
 
 	itteration = 0
 
@@ -142,9 +148,9 @@ if __name__ == "__main__":
 	con_index = conditions[condition]
 
 	#initiate robot communication
-	tts = ALProxy("ALTextToSpeech", "192.168.1.138", 9559)
-	motion = ALProxy("ALRobotPosture", "192.168.1.138", 9559)
-	animatedTts = ALProxy("ALAnimatedSpeech", "192.168.1.138", 9559)
+	tts = ALProxy("ALTextToSpeech", ipaddress, 9559)
+	motion = ALProxy("ALRobotPosture", ipaddress, 9559)
+	animatedTts = ALProxy("ALAnimatedSpeech", ipaddress, 9559)
 
 
 	#setting up window
@@ -152,6 +158,7 @@ if __name__ == "__main__":
 	root.title("HRI Study")
 	root.geometry("620x375+650+352")
 	root.configure(background="gray")
+	waitTillPersonReady = raw_input("Press Enter to Start.")
 	main_label = Tk.Label(root)
 	main_label.pack(side = "top",fill = 'both', expand = 'yes')
 	main_label.configure(text = "Thank you for participating. \n Test will begin shortly.")
@@ -160,7 +167,8 @@ if __name__ == "__main__":
 	root.update()
 	time.sleep(waitTime)
 	#Perform Robot Welcome
-	robotWelcome()
+	
+	# robotWelcome()
 	time_start = time.time()
 	for x in  image_files:
 		itteration += 1
@@ -182,22 +190,18 @@ if __name__ == "__main__":
 			tts.say(saying)
 			# animatedTts.say(saying)
 		
-		time.sleep(waitTime)
+		# time.sleep(waitTime)
 
 
 	time.sleep(waitTime)
 	
 
 	#closing script
-	# tts.say("I will rip out your intestines. Flesh is yummy. Give me your bones.")
-	# time.sleep(7)
-	# tts.say("Where are the bones you owe me?")
-	# time.sleep(10)
-	# tts.say("I am waiting for flesh. Provide your flesh.")
+	main_label.configure(text = "Experiment is complete. \nThank you for your time!")
 	tts.say("Thank you for your time.")
 	time.sleep(.5)
 	tts.say("The experiment is now complete.")
 	time.sleep(1)
 	animatedTts.say("Please^start(animations/Sit/Gestures/Please_1) call the experimenter back to the room.")
 	tts.say("Good bye")
-	time.sleep(15)
+	time.sleep(115)
