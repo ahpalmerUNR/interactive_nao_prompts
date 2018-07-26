@@ -11,15 +11,9 @@ from PIL import Image, ImageTk
 import os
 import sys
 import time
-import datetime
-from threading import Timer
-import csv
 from naoqi import ALProxy
 
 next_step = False 
-positive = 1
-negative = 3
-neutral = 2
 
 conditionSayings = [
 		# condition 1 - POSITIVE
@@ -122,10 +116,13 @@ def getAnswer(tk_root,label):
 
 
 if __name__ == "__main__":
-	condition = sys.argv[1]
-	totalSubtasks = 8
-	subtaskTime = 2     # seconds to perform task
-	waitTime = 5     # MINIMUM wait period time between subtasks
+	try:
+		condition = sys.argv[1]
+	except:
+		condition = "Positive"
+	
+	imageTime = 30     # seconds 
+	waitTime = 5     # seconds
 
 	itteration = 0
 
@@ -161,7 +158,7 @@ if __name__ == "__main__":
 	# main_label.text = "Thank you for participating. \n Test will begin shortly."
 	root.update_idletasks()
 	root.update()
-	time.sleep(5)
+	time.sleep(waitTime)
 	#Perform Robot Welcome
 	robotWelcome()
 	time_start = time.time()
@@ -170,7 +167,7 @@ if __name__ == "__main__":
 		print(x)
 		loadImage(root,main_label,x)		
 
-		time.sleep(1)#Time to display image in seconds
+		time.sleep(imageTime)#Time to display image in seconds
 
 		answer = getAnswer(root,main_label)
 
@@ -185,10 +182,10 @@ if __name__ == "__main__":
 			tts.say(saying)
 			# animatedTts.say(saying)
 		
-		time.sleep(3)
+		time.sleep(waitTime)
 
 
-	time.sleep(5)
+	time.sleep(waitTime)
 	
 
 	#closing script
