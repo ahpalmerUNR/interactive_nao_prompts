@@ -5,7 +5,7 @@ This package runs a simple program that displays images with errors in them and 
 This program is designed to be run on an Aldebaran NAO robot.
 
 ### Prerequisites
-This program has been tested on Ubuntu 14.04 using Python 2.7. Please install the following dependencies. Not all commands will need to be run with sudo if run as root, but to avoid possible permission errors, code below run with sudo.
+This program has been tested on Ubuntu 14.04 using Python 2.7. Please install the following dependencies.
 
 ```
  sudo apt-get install python-tk python-pip python-imaging-tk
