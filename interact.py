@@ -4,7 +4,7 @@
 # @Author: ahpalmerUNR
 # @Date:   2018-07-25 13:43:18
 # @Last Modified by:   ahpalmerUNR
-# @Last Modified time: 2018-07-26 16:07:27
+# @Last Modified time: 2018-07-27 13:12:27
 
 import Tkinter as Tk 
 from PIL import Image, ImageTk
@@ -14,6 +14,7 @@ import time
 from naoqi import ALProxy
 
 next_step = False 
+wrong_entry = False
 
 conditionSayings = [
 		# condition 1 - POSITIVE
@@ -82,8 +83,8 @@ def loadImage(tk_root,label,image_name):
 	tk_root.update()
 
 def test_if_move_forward(entry,label):
-	global next_step
-	print(entry.get())
+	global next_step,wrong_entry
+	# print(entry.get())
 	try:
 		if entry.get() == '':
 			pass
@@ -91,26 +92,29 @@ def test_if_move_forward(entry,label):
 			next_step = True
 		else:
 			raise ValueError("Not an integer between 0 and 50. Value given '%s'"%(entry.get()))
-	except ValueError() as a:
-		print(a)
-		entry.delete(0,END)
-		entry.insert(0,"Not good value.")
-		label.configure(text = "How many mistakes were in the image?\nPlease enter an integer greater than 0,\nand less than 50.")
-		label.text = "How many mistakes were in the image?\nPlease enter an integer greater than 0,\nand less than 50."
+
+	except ValueError as a:
+		wrong_entry = True
 
 def getAnswer(tk_root,label):
-	global  next_step
+	global  next_step,wrong_entry
+	wrong_entry = False
 	next_step = False
 	value = 1
 	label.configure(text = "How many mistakes were in the image?", image = "")
 	label.pack()
-	answer = Tk.Entry(tk_root, textvariable = '1')
+	answer = Tk.Entry(tk_root)
 	answer.pack()
 	next_b = Tk.Button(tk_root, text = "Enter", command = lambda:test_if_move_forward(answer,label))
 	next_b.pack()
 	
 	while not next_step:
-		
+
+		if wrong_entry == True:
+			answer.delete(0,'end')
+			label.configure(text = "How many mistakes were in the image?\nPlease enter an integer greater than 0,\nand less than 50.")
+			wrong_entry = False
+
 		tk_root.update_idletasks()
 		tk_root.update()
 	
@@ -126,8 +130,8 @@ if __name__ == "__main__":
 	except:
 		condition = "Positive"
 	
-	imageTime = 10     # seconds 
-	waitTime = 5     # seconds
+	imageTime = 2     # seconds 
+	waitTime = 1     # seconds
 	ipaddress = "192.168.0.109"
 
 	itteration = 0
@@ -148,9 +152,9 @@ if __name__ == "__main__":
 	con_index = conditions[condition]
 
 	#initiate robot communication
-	tts = ALProxy("ALTextToSpeech", ipaddress, 9559)
-	motion = ALProxy("ALRobotPosture", ipaddress, 9559)
-	animatedTts = ALProxy("ALAnimatedSpeech", ipaddress, 9559)
+	# tts = ALProxy("ALTextToSpeech", ipaddress, 9559)
+	# motion = ALProxy("ALRobotPosture", ipaddress, 9559)
+	# animatedTts = ALProxy("ALAnimatedSpeech", ipaddress, 9559)
 
 
 	#setting up window
@@ -172,7 +176,7 @@ if __name__ == "__main__":
 	time_start = time.time()
 	for x in  image_files:
 		itteration += 1
-		print(x)
+		# print(x)
 		loadImage(root,main_label,x)		
 
 		time.sleep(imageTime)#Time to display image in seconds
@@ -183,25 +187,29 @@ if __name__ == "__main__":
 		# print(answer,itteration)
 
 		#putting saying stuff here
-		if itteration %2 ==1:
-			saying = conditionSayings[con_index][(itteration-1)/2]
+		if itteration %2 ==0:
+			saying = conditionSayings[con_index][(itteration/2)-1]
 			#if desired animated, add animation calls to strings in conditionSayings at top of this doc
 			#and swap comments on following lines
-			tts.say(saying)
+			print(saying)
+			# tts.say(saying)
 			# animatedTts.say(saying)
 		
 		# time.sleep(waitTime)
 
 
-	time.sleep(waitTime)
+
 	
 
 	#closing script
 	main_label.configure(text = "Experiment is complete. \nThank you for your time!")
-	tts.say("Thank you for your time.")
-	time.sleep(.5)
-	tts.say("The experiment is now complete.")
-	time.sleep(1)
-	animatedTts.say("Please^start(animations/Sit/Gestures/Please_1) call the experimenter back to the room.")
-	tts.say("Good bye")
+	root.update_idletasks()
+	root.update()
+	time.sleep(waitTime)
+	# tts.say("Thank you for your time.")
+	# time.sleep(.5)
+	# tts.say("The experiment is now complete.")
+	# time.sleep(1)
+	# animatedTts.say("Please^start(animations/Sit/Gestures/Please_1) call the experimenter back to the room.")
+	# tts.say("Good bye")
 	time.sleep(115)
