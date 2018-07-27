@@ -4,7 +4,7 @@
 # @Author: ahpalmerUNR
 # @Date:   2018-07-25 13:43:18
 # @Last Modified by:   ahpalmerUNR
-# @Last Modified time: 2018-07-27 15:24:20
+# @Last Modified time: 2018-07-27 15:26:24
 
 import Tkinter as Tk 
 from PIL import Image, ImageTk
@@ -150,8 +150,8 @@ if __name__ == "__main__":
 	except:
 		condition = "Positive"
 	
-	imageTime = 1     # seconds 
-	waitTime = 1     # seconds
+	imageTime = 30     # seconds 
+	waitTime = 5     # seconds
 	ipaddress = "192.168.0.109"
 
 	itteration = 0
