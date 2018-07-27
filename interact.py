@@ -4,7 +4,7 @@
 # @Author: ahpalmerUNR
 # @Date:   2018-07-25 13:43:18
 # @Last Modified by:   ahpalmerUNR
-# @Last Modified time: 2018-07-27 13:12:27
+# @Last Modified time: 2018-07-27 15:24:20
 
 import Tkinter as Tk 
 from PIL import Image, ImageTk
@@ -84,7 +84,7 @@ def loadImage(tk_root,label,image_name):
 
 def test_if_move_forward(entry,label):
 	global next_step,wrong_entry
-	# print(entry.get())
+
 	try:
 		if entry.get() == '':
 			pass
@@ -96,13 +96,18 @@ def test_if_move_forward(entry,label):
 	except ValueError as a:
 		wrong_entry = True
 
+
+def move_forward():
+	global next_step
+	next_step = True
+
 def getAnswer(tk_root,label):
 	global  next_step,wrong_entry
 	wrong_entry = False
 	next_step = False
 	value = 1
 	label.configure(text = "How many mistakes were in the image?", image = "")
-	label.pack()
+	# label.pack()
 	answer = Tk.Entry(tk_root)
 	answer.pack()
 	next_b = Tk.Button(tk_root, text = "Enter", command = lambda:test_if_move_forward(answer,label))
@@ -121,7 +126,22 @@ def getAnswer(tk_root,label):
 	value = int(answer.get())
 	answer.destroy()
 	next_b.destroy()
+	label.configure(text = "Get ready for next image.")
+	tk_root.update_idletasks()
+	tk_root.update()
 	return value
+
+def wait_for_participant(tk_root, label):
+	global next_step
+	continue_button = Tk.Button(tk_root, text = "Continue", command = lambda:move_forward())
+	continue_button.pack()
+	while not next_step:
+		tk_root.update_idletasks()
+		tk_root.update()
+
+	continue_button.destroy()
+	next_step = False
+
 
 
 if __name__ == "__main__":
@@ -130,7 +150,7 @@ if __name__ == "__main__":
 	except:
 		condition = "Positive"
 	
-	imageTime = 2     # seconds 
+	imageTime = 1     # seconds 
 	waitTime = 1     # seconds
 	ipaddress = "192.168.0.109"
 
@@ -152,9 +172,9 @@ if __name__ == "__main__":
 	con_index = conditions[condition]
 
 	#initiate robot communication
-	# tts = ALProxy("ALTextToSpeech", ipaddress, 9559)
-	# motion = ALProxy("ALRobotPosture", ipaddress, 9559)
-	# animatedTts = ALProxy("ALAnimatedSpeech", ipaddress, 9559)
+	tts = ALProxy("ALTextToSpeech", ipaddress, 9559)
+	motion = ALProxy("ALRobotPosture", ipaddress, 9559)
+	animatedTts = ALProxy("ALAnimatedSpeech", ipaddress, 9559)
 
 
 	#setting up window
@@ -162,54 +182,50 @@ if __name__ == "__main__":
 	root.title("HRI Study")
 	root.geometry("620x375+650+352")
 	root.configure(background="gray")
-	waitTillPersonReady = raw_input("Press Enter to Start.")
+
 	main_label = Tk.Label(root)
 	main_label.pack(side = "top",fill = 'both', expand = 'yes')
+	main_label.configure(text = "Press the Continue button to start the experiment.")
+	wait_for_participant(root,main_label)
+
 	main_label.configure(text = "Thank you for participating. \n Test will begin shortly.")
-	# main_label.text = "Thank you for participating. \n Test will begin shortly."
+
 	root.update_idletasks()
 	root.update()
 	time.sleep(waitTime)
+
 	#Perform Robot Welcome
-	
-	# robotWelcome()
-	time_start = time.time()
+	robotWelcome()
+
 	for x in  image_files:
 		itteration += 1
-		# print(x)
+
+		time.sleep(waitTime)
+		
 		loadImage(root,main_label,x)		
 
-		time.sleep(imageTime)#Time to display image in seconds
+		time.sleep(imageTime)
 
 		answer = getAnswer(root,main_label)
 
-
-		# print(answer,itteration)
-
-		#putting saying stuff here
+		#on even images have the robot say things
 		if itteration %2 ==0:
 			saying = conditionSayings[con_index][(itteration/2)-1]
 			#if desired animated, add animation calls to strings in conditionSayings at top of this doc
 			#and swap comments on following lines
-			print(saying)
-			# tts.say(saying)
+
+			tts.say(saying)
 			# animatedTts.say(saying)
-		
-		# time.sleep(waitTime)
-
-
-
-	
 
 	#closing script
 	main_label.configure(text = "Experiment is complete. \nThank you for your time!")
 	root.update_idletasks()
 	root.update()
 	time.sleep(waitTime)
-	# tts.say("Thank you for your time.")
-	# time.sleep(.5)
-	# tts.say("The experiment is now complete.")
-	# time.sleep(1)
-	# animatedTts.say("Please^start(animations/Sit/Gestures/Please_1) call the experimenter back to the room.")
-	# tts.say("Good bye")
+	tts.say("Thank you for your time.")
+	time.sleep(.5)
+	tts.say("The experiment is now complete.")
+	time.sleep(1)
+	animatedTts.say("Please^start(animations/Sit/Gestures/Please_1) call the experimenter back to the room.")
+	tts.say("Good bye")
 	time.sleep(115)
