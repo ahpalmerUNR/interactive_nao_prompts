@@ -31,9 +31,9 @@ conditionSayings = [
 		# condition 2 neutral is empty
 		[
 			"You can continue to the next image",
-			"You are halfway through",
-			"You can move on now",
-			"You are done now",
+			"You are halfway through the experiment",
+			"You can move on to the next image",
+			"You are done with the experiment",
 			#"",
 			#"",
 			#"",
@@ -43,7 +43,7 @@ conditionSayings = [
 		[
 			"You are really bad at this",
 			"You are doing terrible",
-			"You just dont get this",
+			"You really just don't get this",
 			"You did really badly",
 			#"You need some practice",
 			#"You are not so good at this",
@@ -63,15 +63,16 @@ def robotWelcome():
 	animatedTts.say("My^wait(animations/Stand/Gestures/Me_1)name is Taylor")
 
 	tts.say("Thank you for spending a bit of time with me")
-	animatedTts.say("Let me walk ^start(animations/Stand/Gestures/You_1)you through the task")
+	animatedTts.say("Let me walk ^start(animations/Stand/Gestures/Next_1)you through the task")
 	tts.say("There will be a total of eight images")
 	tts.say("You will have thirty seconds to count the number of things wrong in each image")
 	animatedTts.say("Please^start(animations/Stand/Gestures/Please_1) answer as quickly and acurately as possible")
 	animatedTts.say("you will need to enter ^start(animations/Stand/Gestures/Enthusiastic_4)a nonzero numerical value")
-	time.sleep(3)
-	tts.say("After you finish each task, I will check your answers")
-	tts.say("Now let's get started.")
 	time.sleep(1)
+	tts.say("After you finish each task, I will check your answers")
+	animatedTts.say("Now let's ^start(animations/Stand/Gestures/Please_1)get started.")
+	time.sleep(1)
+	motion.goToPosture("Stand", 1.0)
 	
 
 def loadImage(tk_root,label,image_name):
@@ -152,7 +153,7 @@ if __name__ == "__main__":
 	
 	imageTime = 30     # seconds 
 	waitTime = 5     # seconds
-	ipaddress = "192.168.0.109"
+	ipaddress = "192.168.0.102"
 
 	itteration = 0
 
@@ -172,9 +173,9 @@ if __name__ == "__main__":
 	con_index = conditions[condition]
 
 	#initiate robot communication
-	tts = ALProxy("ALTextToSpeech", ipaddress, 9559)
-	motion = ALProxy("ALRobotPosture", ipaddress, 9559)
-	animatedTts = ALProxy("ALAnimatedSpeech", ipaddress, 9559)
+	tts = ALProxy("ALTextToSpeech", "192.168.0.102", 9559)
+	motion = ALProxy("ALRobotPosture", "192.168.0.102", 9559)
+	animatedTts = ALProxy("ALAnimatedSpeech", "192.168.0.102", 9559)
 
 
 	#setting up window
@@ -226,6 +227,8 @@ if __name__ == "__main__":
 	time.sleep(.5)
 	tts.say("The experiment is now complete.")
 	time.sleep(1)
-	animatedTts.say("Please^start(animations/Sit/Gestures/Please_1) call the experimenter back to the room.")
+	animatedTts.say("Please^start(animations/Stand/Gestures/Please_1) call the experimenter back to the room.")
 	tts.say("Good bye")
+	motion.goToPosture("Stand", 1.0)
 	time.sleep(115)
+	
